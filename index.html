@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MNM Pulseras | Personaliza tu pulsera</title>
+  <meta name="description" content="Crea tu pulsera artesanal eligiendo cuántas cuerdas de cada color quieres y cuántas pulseras comprar. Hechas a mano con cariño en MNM Pulseras.">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(to bottom right, #b3e5fc, #81d4fa, #4fc3f7);
+      color: #003366;
+      text-align: center;
+      padding: 30px;
+    }
+
+    h1 {
+      color: #01579b;
+      font-size: 2.5em;
+      margin-bottom: 15px;
+    }
+
+    .color-option {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 8px 0;
+      gap: 10px;
+      font-size: 1.1em;
+    }
+
+    .color-square {
+      width: 25px;
+      height: 25px;
+      border-radius: 4px;
+      display: inline-block;
+      border: 1px solid #003366;
+    }
+
+    input[type="number"], select {
+      width: 60px;
+      padding: 5px;
+      border: 2px solid #4fc3f7;
+      border-radius: 6px;
+      text-align: center;
+      font-size: 1em;
+    }
+
+    button {
+      background-color: #4fc3f7;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 12px;
+      color: white;
+      font-size: 1.1em;
+      cursor: pointer;
+      transition: 0.3s;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background-color: #29b6f6;
+      transform: scale(1.05);
+    }
+
+    #contador, #precio-total {
+      font-weight: bold;
+      margin: 15px 0;
+      font-size: 1.2em;
+      transition: color 0.3s ease;
+    }
+
+    #mensaje {
+      color: red;
+      font-weight: bold;
+      margin-top: 10px;
+      display: none;
+    }
+
+    footer {
+      margin-top: 40px;
+      background-color: #bbdefb;
+      padding: 15px;
+      border-radius: 10px;
+      font-size: 0.9em;
+      color: #004c8c;
+    }
+  </style>
+</head>
+<body>
+  <h1>Crea tu pulsera personalizada</h1>
+  <p>Elige cuántas cuerdas de cada color quieres (deben sumar <strong>7</strong>):</p>
+
+  <div id="colores">
+    <div class="color-option"><div class="color-square" style="background-color:red;"></div><label>Rojo</label><input type="number" min="0" max="7" value="0"></div>
+    <div class="color-option"><div class="color-square" style="background-color:orange;"></div><label>Naranja</label><input type="number" min="0" max="7" value="0"></div>
+    <div class="color-option"><div class="color-square" style="background-color:yellow;"></div><label>Amarillo</label><input type="number" min="0" max="7" value="0"></div>
+    <div class="color-option"><div class="color-square" style="background-color:#90ee90;"></div><label>Verde claro</label><input type="number" min="0" max="7" value="0"></div>
+    <div class="color-option"><div class="color-square" style="background-color:#006400;"></div><label>Verde oscuro</label><input type="number" min="0" max="7" value="0"></div>
+    <div class="color-option"><div class="color-square" style="background-color:#87cefa;"></div><label>Azul claro</label><input type="number" min="0" max="7" value="0"></div>
+    <div class="color-option"><div class="color-square" style="background-color:#00008b;"></div><label>Azul oscuro</label><input type="number" min="0" max="7" value="0"></div>
+    <div class="color-option"><div class="color-square" style="background-color:pink;"></div><label>Rosa</label><input type="number" min="0" max="7" value="0"></div>
+    <div class="color-option"><div class="color-square" style="background-color:purple;"></div><label>Morado</label><input type="number" min="0" max="7" value="0"></div>
+    <div class="color-option"><div class="color-square" style="background-color:white;border:1px solid #003366;"></div><label>Blanco</label><input type="number" min="0" max="7" value="0"></div>
+    <div class="color-option"><div class="color-square" style="background-color:black;"></div><label>Negro</label><input type="number" min="0" max="7" value="0"></div>
+  </div>
+
+  <p id="contador">Has elegido 0 de 7 cuerdas</p>
+
+  <p>Elige un pack de pulseras (opcional):</p>
+  <select id="pack">
+    <option value="0">Sin pack (elige cantidad personalizada)</option>
+    <option value="1">1 pulsera</option>
+    <option value="3">3 pulseras</option>
+    <option value="5">5 pulseras</option>
+    <option value="10">10 pulseras</option>
+  </select>
+
+  <div id="cantidad-personalizada-container" style="margin:15px 0;">
+    <label for="cantidad-personalizada">Cantidad de pulseras:</label>
+    <input type="number" id="cantidad-personalizada" min="1" value="1">
+  </div>
+
+  <p id="precio-total">Precio: 0 €</p>
+  <p id="mensaje">⚠️ Las cuerdas deben sumar exactamente 7.</p>
+
+  <button onclick="enviarPedido()">Enviar pedido</button>
+
+  <footer>
+    <p>Los pedidos se envían a: <strong>mnm1pulseras@gmail.com</strong></p>
+  </footer>
+
+  <script>
+    const inputs = document.querySelectorAll('#colores input');
+    const contador = document.getElementById('contador');
+    const mensaje = document.getElementById('mensaje');
+    const pack = document.getElementById('pack');
+    const cantidadInput = document.getElementById('cantidad-personalizada');
+    const precioTotal = document.getElementById('precio-total');
+    const contenedorCantidad = document.getElementById('cantidad-personalizada-container');
+
+    const preciosPack = {1:1.5, 3:4, 5:6, 10:11};
+    const precioUnidad = 1.5;
+
+    function actualizarContador() {
+      let totalCuerdas = 0;
+      inputs.forEach(input => totalCuerdas += parseInt(input.value) || 0);
+
+      contador.textContent = `Has elegido ${totalCuerdas} de 7 cuerdas`;
+      contador.style.color = (totalCuerdas === 7) ? "#388e3c" : "#d32f2f";
+
+      actualizarPrecio();
+    }
+
+    function actualizarPrecio() {
+      const cantidadPack = parseInt(pack.value);
+      let precio = 0;
+      let cantidadTotal = 1;
+
+      if(cantidadPack > 0) {
+        precio = preciosPack[cantidadPack];
+        contenedorCantidad.style.display = 'none';
+        cantidadTotal = cantidadPack;
+      } else {
+        contenedorCantidad.style.display = 'block';
+        cantidadTotal = parseInt(cantidadInput.value) || 1;
+        precio = precioUnidad * cantidadTotal;
+      }
+
+      precioTotal.textContent = `Precio: ${precio} €`;
+    }
+
+    inputs.forEach(input => input.addEventListener('input', actualizarContador));
+    pack.addEventListener('change', actualizarPrecio);
+    cantidadInput.addEventListener('input', actualizarPrecio);
+
+    function enviarPedido() {
+      let totalCuerdas = 0;
+      const seleccion = [];
+
+      inputs.forEach((input) => {
+        const cantidad = parseInt(input.value) || 0;
+        if (cantidad > 0) {
+          const color = input.parentElement.querySelector('label').textContent;
+          seleccion.push(`${color}: ${cantidad}`);
+        }
+        totalCuerdas += cantidad;
+      });
+
+      if(totalCuerdas !== 7) {
+        mensaje.style.display = 'block';
+        setTimeout(() => mensaje.style.display = 'none', 2000);
+        return;
+      }
+
+      let cantidadTotal;
+      const cantidadPack = parseInt(pack.value);
+      if(cantidadPack > 0) cantidadTotal = cantidadPack;
+      else cantidadTotal = parseInt(cantidadInput.value) || 1;
+
+      const asunto = encodeURIComponent("Nuevo pedido de pulsera MNM");
+      const cuerpo = encodeURIComponent(`Cuerdas elegidas:\n${seleccion.join('\n')}\nCantidad: ${cantidadTotal} pulsera(s)\nPrecio: ${precioTotal.textContent.replace('Precio: ', '')}`);
+      window.location.href = `mailto:mnm1pulseras@gmail.com?subject=${asunto}&body=${cuerpo}`;
+    }
+
+    actualizarContador();
+  </script>
+</body>
+</html>
