@@ -1,3 +1,2 @@
-MNM Pulseras
-
-pulseras de lana 100% hechas a mano
+# MNM-Pulseras
+Pulseras de lana hechas 100% a mano
