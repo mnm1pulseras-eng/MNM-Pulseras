@@ -213,7 +213,8 @@
 
     actualizarContador();
   </script>
-  <!-- INICIO CARRITO MNM PULSERAS -->
+  
+<!-- INICIO CARRITO MNM PULSERAS -->
 <style>
   /* Estilo del carrito */
   #mnm-carrito {
@@ -222,7 +223,7 @@
     right: 20px;
     width: 300px;
     max-height: 400px;
-    background: #1e3a5f; /* azul oscuro suave */
+    background: #1e3a5f;
     color: white;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.3);
@@ -257,6 +258,8 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 5px;
   }
 
   #mnm-carrito button {
@@ -279,22 +282,25 @@
   <div id="mnm-carrito-footer">
     <span id="mnm-carrito-total">Total: 0€</span>
     <button id="mnm-carrito-clear">Vaciar</button>
+    <button id="mnm-carrito-send">Enviar Pedido</button>
   </div>
 </div>
 
 <script>
-  // Datos del carrito
   let carrito = [];
 
   const carritoHeader = document.getElementById('mnm-carrito-header');
   const carritoItems = document.getElementById('mnm-carrito-items');
   const carritoTotal = document.getElementById('mnm-carrito-total');
   const carritoClear = document.getElementById('mnm-carrito-clear');
+  const carritoSend = document.getElementById('mnm-carrito-send');
 
   // Mostrar u ocultar carrito
   carritoHeader.addEventListener('click', () => {
-    carritoItems.style.display = carritoItems.style.display === 'none' ? 'block' : 'none';
-    document.getElementById('mnm-carrito-footer').style.display = carritoItems.style.display;
+    const display = carritoItems.style.display === 'none' ? 'block' : 'none';
+    carritoItems.style.display = display;
+    carritoClear.style.display = display;
+    carritoSend.style.display = display;
   });
 
   // Añadir producto al carrito
@@ -328,13 +334,50 @@
     actualizarCarrito();
   }
 
+  // Enviar pedido a Formspree
+  carritoSend.addEventListener('click', () => {
+    if(carrito.length === 0){
+      alert("Tu carrito está vacío!");
+      return;
+    }
+
+    const form = document.createElement('form');
+    form.action = "https://formspree.io/f/xvgwlzzb"; // tu URL de Formspree
+    form.method = "POST";
+
+    carrito.forEach((item, i) => {
+      const inputNombre = document.createElement('input');
+      inputNombre.type = 'hidden';
+      inputNombre.name = `Producto${i+1}_Nombre`;
+      inputNombre.value = item.nombre;
+      form.appendChild(inputNombre);
+
+      const inputPrecio = document.createElement('input');
+      inputPrecio.type = 'hidden';
+      inputPrecio.name = `Producto${i+1}_Precio`;
+      inputPrecio.value = item.precio;
+      form.appendChild(inputPrecio);
+    });
+
+    const inputTotal = document.createElement('input');
+    inputTotal.type = 'hidden';
+    inputTotal.name = 'Total';
+    inputTotal.value = carrito.reduce((acc, item) => acc + item.precio, 0);
+    form.appendChild(inputTotal);
+
+    document.body.appendChild(form);
+    form.submit();
+  });
+
   // Oculto al cargar
   carritoItems.style.display = 'none';
-  document.getElementById('mnm-carrito-footer').style.display = 'none';
+  carritoClear.style.display = 'none';
+  carritoSend.style.display = 'none';
 </script>
 <!-- FIN CARRITO MNM PULSERAS -->
 </body>
 </html>
+
 
 
 
