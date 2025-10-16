@@ -213,8 +213,129 @@
 
     actualizarContador();
   </script>
+  <!-- INICIO CARRITO MNM PULSERAS -->
+<style>
+  /* Estilo del carrito */
+  #mnm-carrito {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 300px;
+    max-height: 400px;
+    background: #1e3a5f; /* azul oscuro suave */
+    color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    z-index: 9999;
+  }
+
+  #mnm-carrito-header {
+    background: #142639;
+    padding: 12px;
+    font-weight: bold;
+    text-align: center;
+    cursor: pointer;
+  }
+
+  #mnm-carrito-items {
+    padding: 12px;
+    max-height: 250px;
+    overflow-y: auto;
+  }
+
+  #mnm-carrito-items div {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+
+  #mnm-carrito-footer {
+    padding: 12px;
+    border-top: 1px solid rgba(255,255,255,0.3);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  #mnm-carrito button {
+    background: #3a5f8f;
+    border: none;
+    padding: 6px 12px;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  #mnm-carrito button:hover {
+    background: #4a70a5;
+  }
+</style>
+
+<div id="mnm-carrito">
+  <div id="mnm-carrito-header">🛒 Tu Carrito</div>
+  <div id="mnm-carrito-items"></div>
+  <div id="mnm-carrito-footer">
+    <span id="mnm-carrito-total">Total: 0€</span>
+    <button id="mnm-carrito-clear">Vaciar</button>
+  </div>
+</div>
+
+<script>
+  // Datos del carrito
+  let carrito = [];
+
+  const carritoHeader = document.getElementById('mnm-carrito-header');
+  const carritoItems = document.getElementById('mnm-carrito-items');
+  const carritoTotal = document.getElementById('mnm-carrito-total');
+  const carritoClear = document.getElementById('mnm-carrito-clear');
+
+  // Mostrar u ocultar carrito
+  carritoHeader.addEventListener('click', () => {
+    carritoItems.style.display = carritoItems.style.display === 'none' ? 'block' : 'none';
+    document.getElementById('mnm-carrito-footer').style.display = carritoItems.style.display;
+  });
+
+  // Añadir producto al carrito
+  function agregarAlCarrito(nombre, precio) {
+    carrito.push({ nombre, precio });
+    actualizarCarrito();
+  }
+
+  // Vaciar carrito
+  carritoClear.addEventListener('click', () => {
+    carrito = [];
+    actualizarCarrito();
+  });
+
+  // Actualizar interfaz del carrito
+  function actualizarCarrito() {
+    carritoItems.innerHTML = '';
+    let total = 0;
+    carrito.forEach((item, i) => {
+      total += item.precio;
+      const div = document.createElement('div');
+      div.innerHTML = `${item.nombre} - ${item.precio}€ <button onclick="eliminarItem(${i})">X</button>`;
+      carritoItems.appendChild(div);
+    });
+    carritoTotal.innerText = `Total: ${total}€`;
+  }
+
+  // Eliminar un item
+  function eliminarItem(index) {
+    carrito.splice(index, 1);
+    actualizarCarrito();
+  }
+
+  // Oculto al cargar
+  carritoItems.style.display = 'none';
+  document.getElementById('mnm-carrito-footer').style.display = 'none';
+</script>
+<!-- FIN CARRITO MNM PULSERAS -->
 </body>
 </html>
+
 
 
 
