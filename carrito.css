@@ -1,0 +1,58 @@
+/* Estilo del carrito */
+#mnm-carrito {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 300px;
+  max-height: 400px;
+  background: #1e3a5f;
+  color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  overflow: hidden;
+  font-family: Arial, sans-serif;
+  z-index: 9999;
+}
+
+#mnm-carrito-header {
+  background: #142639;
+  padding: 12px;
+  font-weight: bold;
+  text-align: center;
+  cursor: pointer;
+}
+
+#mnm-carrito-items {
+  padding: 12px;
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+#mnm-carrito-items div {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+#mnm-carrito-footer {
+  padding: 12px;
+  border-top: 1px solid rgba(255,255,255,0.3);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+#mnm-carrito button {
+  background: #3a5f8f;
+  border: none;
+  padding: 6px 12px;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#mnm-carrito button:hover {
+  background: #4a70a5;
+}
