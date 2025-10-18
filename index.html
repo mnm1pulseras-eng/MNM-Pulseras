@@ -2,19 +2,10 @@
 <html lang="es">
 <head> 
   <link rel="stylesheet" href="carrito.css">
-  <script src="carro.js"></script>
-  <meta name="google-site-verification" content="sVN5Aptt7fIdWBspVe-XF4GrGHyOinr94LlBqa0MsUM" />
-  <link rel="icon" type="image/png" href="favicon.png">
-  <meta property="og:title" content="MNM Pulseras | Personaliza tu pulsera">
-<meta property="og:description" content="Crea tu pulsera artesanal eligiendo cuántas cuerdas de cada color quieres.">
-<meta property="og:image" content="https://mnm1pulseras-eng.github.io/mnm-pulseras/preview.png">
-<meta property="og:url" content="https://mnm1pulseras-eng.github.io/mnm-pulseras/">
-<meta property="og:type" content="website">
-<meta charset="UTF-8" /> 
+  <meta charset="UTF-8" /> 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" /> 
   <title>MNM Pulseras | Personaliza tu pulsera</title>
-  <meta name="description" content="Crea tu pulsera artesanal eligiendo cuántas cuerdas de cada color quieres y cuántas pulseras comprar. Hechas a mano en MNM Pulseras.">
-   <style>
+  <style>
     body {
       font-family: 'Poppins', sans-serif;
       background: linear-gradient(to bottom right, #b3e5fc, #81d4fa, #4fc3f7);
@@ -46,7 +37,7 @@
       border: 1px solid #003366;
     }
 
-    input[type="number"], select {
+    input[type="number"] {
       width: 60px;
       padding: 5px;
       border: 2px solid #4fc3f7;
@@ -65,6 +56,7 @@
       cursor: pointer;
       transition: 0.3s;
       margin-top: 20px;
+      margin-right: 10px;
     }
 
     button:hover {
@@ -94,6 +86,51 @@
       font-size: 0.9em;
       color: #004c8c;
     }
+
+    #mnm-carrito {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 300px;
+      max-height: 400px;
+      background: #cce7ff;
+      color: black;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      overflow: hidden;
+      z-index: 9999;
+    }
+
+    #mnm-carrito-header {
+      background: #1e3a5f;
+      color: white;
+      padding: 12px;
+      font-weight: bold;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    #mnm-carrito-items {
+      padding: 12px;
+      max-height: 250px;
+      overflow-y: auto;
+    }
+
+    #mnm-carrito-items div {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    #mnm-carrito-footer {
+      padding: 12px;
+      border-top: 1px solid rgba(0,0,0,0.2);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
   </style>
 </head>
 <body>
@@ -117,15 +154,6 @@
 
   <p id="contador">Has elegido 0 de 7 cuerdas</p>
 
-  <p>Elige un pack de pulseras (opcional):</p>
-  <select id="pack">
-    <option value="0">Sin pack (elige cantidad personalizada)</option>
-    <option value="1">1 pulsera</option>
-    <option value="3">3 pulseras</option>
-    <option value="5">5 pulseras</option>
-    <option value="10">10 pulseras</option>
-  </select>
-
   <div id="cantidad-personalizada-container" style="margin:15px 0;">
     <label for="cantidad-personalizada">Cantidad de pulseras:</label>
     <input type="number" id="cantidad-personalizada" min="1" value="1">
@@ -134,26 +162,39 @@
   <p id="precio-total">Precio: 0 €</p>
   <p id="mensaje">⚠️ Las cuerdas deben sumar exactamente 7.</p>
 
+  <!-- Botones -->
   <button onclick="enviarPedido()">Enviar al correo</button>
   <button onclick="agregarAlCarrito()">Añadir al carrito</button>
-
 
   <footer>
     <p>Los pedidos se envían a: <strong>mnm1pulseras@gmail.com</strong></p>
   </footer>
 
+  <div id="mnm-carrito">
+    <div id="mnm-carrito-header">🛒 Tu Carrito</div>
+    <div id="mnm-carrito-items"></div>
+    <div id="mnm-carrito-footer">
+      <span id="mnm-carrito-total">Total: 0€</span>
+      <button id="mnm-carrito-clear">Vaciar</button>
+    </div>
+  </div>
+
   <script>
     const inputs = document.querySelectorAll('#colores input');
     const contador = document.getElementById('contador');
     const mensaje = document.getElementById('mensaje');
-    const pack = document.getElementById('pack');
     const cantidadInput = document.getElementById('cantidad-personalizada');
     const precioTotal = document.getElementById('precio-total');
     const contenedorCantidad = document.getElementById('cantidad-personalizada-container');
 
-    const preciosPack = {1:1.5, 3:4, 5:6, 10:11};
-    const precioUnidad = 1.5;
+    const carritoItems = document.getElementById('mnm-carrito-items');
+    const carritoTotal = document.getElementById('mnm-carrito-total');
+    const carritoClear = document.getElementById('mnm-carrito-clear');
 
+    const precioUnidad = 1.5;
+    let carrito = [];
+
+    // Contador de cuerdas y precio
     function actualizarContador() {
       let totalCuerdas = 0;
       inputs.forEach(input => totalCuerdas += parseInt(input.value) || 0);
@@ -165,75 +206,99 @@
     }
 
     function actualizarPrecio() {
-      const cantidadPack = parseInt(pack.value);
-      let precio = 0;
-      let cantidadTotal = 1;
-
-      if(cantidadPack > 0) {
-        precio = preciosPack[cantidadPack];
-        contenedorCantidad.style.display = 'none';
-        cantidadTotal = cantidadPack;
-      } else {
-        contenedorCantidad.style.display = 'block';
-        cantidadTotal = parseInt(cantidadInput.value) || 1;
-        precio = precioUnidad * cantidadTotal;
-      }
-
+      let cantidadTotal = parseInt(cantidadInput.value) || 1;
+      let precio = precioUnidad * cantidadTotal;
       precioTotal.textContent = `Precio: ${precio} €`;
     }
 
     inputs.forEach(input => input.addEventListener('input', actualizarContador));
-    pack.addEventListener('change', actualizarPrecio);
     cantidadInput.addEventListener('input', actualizarPrecio);
 
+    // Función enviar correo
     function enviarPedido() {
       let totalCuerdas = 0;
       const seleccion = [];
 
-      inputs.forEach((input) => {
+      inputs.forEach(input => {
         const cantidad = parseInt(input.value) || 0;
-        if (cantidad > 0) {
+        if(cantidad>0){
           const color = input.parentElement.querySelector('label').textContent;
           seleccion.push(`${color}: ${cantidad}`);
         }
         totalCuerdas += cantidad;
       });
 
-      if(totalCuerdas !== 7) {
+      if(totalCuerdas !== 7){
         mensaje.style.display = 'block';
-        setTimeout(() => mensaje.style.display = 'none', 2000);
+        setTimeout(()=>mensaje.style.display='none',2000);
         return;
       }
 
-      let cantidadTotal;
-      const cantidadPack = parseInt(pack.value);
-      if(cantidadPack > 0) cantidadTotal = cantidadPack;
-      else cantidadTotal = parseInt(cantidadInput.value) || 1;
-
+      let cantidadTotal = parseInt(cantidadInput.value) || 1;
+      const cuerpo = encodeURIComponent(`Cuerdas elegidas:\n${seleccion.join('\n')}\nCantidad: ${cantidadTotal} pulsera(s)\nPrecio: ${precioTotal.textContent.replace('Precio: ','')}`);
       const asunto = encodeURIComponent("Nuevo pedido de pulsera MNM");
-      const cuerpo = encodeURIComponent(`Cuerdas elegidas:\n${seleccion.join('\n')}\nCantidad: ${cantidadTotal} pulsera(s)\nPrecio: ${precioTotal.textContent.replace('Precio: ', '')}`);
       window.location.href = `mailto:mnm1pulseras@gmail.com?subject=${asunto}&body=${cuerpo}`;
     }
 
+    // Función añadir al carrito
+    function agregarAlCarrito(){
+      let totalCuerdas = 0;
+      const seleccion = [];
+
+      inputs.forEach(input => {
+        const cantidad = parseInt(input.value) || 0;
+        if(cantidad>0){
+          const color = input.parentElement.querySelector('label').textContent;
+          seleccion.push({color, cantidad});
+        }
+        totalCuerdas += cantidad;
+      });
+
+      if(totalCuerdas !== 7){
+        mensaje.style.display = 'block';
+        setTimeout(()=>mensaje.style.display='none',2000);
+        return;
+      }
+
+      let cantidadTotal = parseInt(cantidadInput.value) || 1;
+      const precio = precioUnidad * cantidadTotal;
+
+      carrito.push({seleccion, cantidadTotal, precio});
+      actualizarCarritoVisual();
+    }
+
+    function actualizarCarritoVisual(){
+      carritoItems.innerHTML = '';
+      let total = 0;
+      carrito.forEach((item,i)=>{
+        total += item.precio;
+        const div = document.createElement('div');
+        div.innerHTML = `Pulsera ${i+1}: ${item.seleccion.map(s=>s.color+' ('+s.cantidad+')').join(', ')} - ${item.cantidadTotal} unidad(es) - ${item.precio.toFixed(2)}€`;
+
+        const btn = document.createElement('button');
+        btn.textContent='X';
+        btn.style.marginLeft='5px';
+        btn.addEventListener('click',()=>{
+          carrito.splice(i,1);
+          actualizarCarritoVisual();
+        });
+
+        div.appendChild(btn);
+        carritoItems.appendChild(div);
+      });
+
+      carritoTotal.textContent=`Total: ${total.toFixed(2)}€`;
+    }
+
+    carritoClear.addEventListener('click', ()=>{
+      carrito=[];
+      actualizarCarritoVisual();
+    });
+
     actualizarContador();
   </script>
-  
-  <div id="mnm-carrito">
-  <div id="mnm-carrito-header">🛒 Tu Carrito</div>
-  <div id="mnm-carrito-items"></div>
-  <div id="mnm-carrito-footer">
-    <span id="mnm-carrito-total">Total: 0€</span>
-    <button id="mnm-carrito-clear">Vaciar</button>
-    <button id="mnm-carrito-send">Enviar Pedido</button>
-  </div>
-</div>
 </body>
 </html>
-
-
-
-
-
 
 
 
